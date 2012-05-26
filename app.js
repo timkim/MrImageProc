@@ -68,6 +68,46 @@ document.addEventListener("deviceready", function(){
 		ctx.putImageData(croppedImage,0,0);
 	});	
 	
+	$('#noiseButton').click(function(){
+		var theCanvas = $('#theCanvas')[0];
+		var ctx = theCanvas.getContext('2d');
+		var croppedImage = ctx.getImageData(0,0,theCanvas.width,theCanvas.height);
+		croppedImage = noise(croppedImage);
+		ctx.putImageData(croppedImage,0,0);
+	});		
+	
+	$('#invertButton').click(function(){
+		var theCanvas = $('#theCanvas')[0];
+		var ctx = theCanvas.getContext('2d');
+		var croppedImage = ctx.getImageData(0,0,theCanvas.width,theCanvas.height);
+		croppedImage = invert(croppedImage);
+		ctx.putImageData(croppedImage,0,0);
+	});	
+
+	$('#redButton').click(function(){
+		var theCanvas = $('#theCanvas')[0];
+		var ctx = theCanvas.getContext('2d');
+		var croppedImage = ctx.getImageData(0,0,theCanvas.width,theCanvas.height);
+		croppedImage = redder(croppedImage);
+		ctx.putImageData(croppedImage,0,0);
+	});
+	
+	$('#blueButton').click(function(){
+		var theCanvas = $('#theCanvas')[0];
+		var ctx = theCanvas.getContext('2d');
+		var croppedImage = ctx.getImageData(0,0,theCanvas.width,theCanvas.height);
+		croppedImage = bluer(croppedImage);
+		ctx.putImageData(croppedImage,0,0);
+	});
+	
+	$('#greenButton').click(function(){
+		var theCanvas = $('#theCanvas')[0];
+		var ctx = theCanvas.getContext('2d');
+		var croppedImage = ctx.getImageData(0,0,theCanvas.width,theCanvas.height);
+		croppedImage = greener(croppedImage);
+		ctx.putImageData(croppedImage,0,0);
+	});
+	
 	$('#resetButton').click(function(){
 		reset();
 	});
@@ -186,6 +226,139 @@ document.addEventListener("deviceready", function(){
 				}
 				img.data[index] = r;
 				img.data[index+1] = g;
+				img.data[index+2] = b;
+			}
+		}
+		return img;		
+	}
+	
+	var noise = function(img){
+		var theWidth = $('#pictureImg').width();
+		var theHeight = $('#pictureImg').height();
+		
+		// amount to be percentage of image to be converted to noise
+		var amount = Math.floor(0.3 * theWidth * theHeight);
+		var strength = 0.5;
+		
+		
+		for(var i=0;i<amount;i++){
+			var rowRandom = Math.floor((Math.random()*theHeight));
+			var colRandom = Math.floor((Math.random()*theWidth));
+			
+			// probably should use a better distribution function
+			var index = (colRandom+rowRandom*theWidth)*4;
+			var noise = ((-128 * strength) /2) + (Math.random() * 128 * strength);
+			var r = img.data[index];
+			var g = img.data[index+1];
+			var b = img.data[index+2];
+			
+			r += noise;
+			g += noise;
+			b += noise;
+			
+			if(r<0){
+				r = 0
+			}else if(r >255){
+				r = 255;
+			}
+			
+			if(g<0){
+				g = 0;
+			}else if(g >255){
+				g = 255;
+			}
+			
+			if(b<0){
+				b = 0;
+			}else if(b >255){
+				b = 255;
+			}
+			
+			img.data[index] = r;
+			img.data[index+1] = g;
+			img.data[index+2] = b;			
+		}
+		return img;		
+	}
+	
+	var invert = function(img){
+		var theWidth = $('#pictureImg').width();
+		var theHeight = $('#pictureImg').height();;
+		
+		for(var i=0;i<theWidth;i++){
+			for(var j=0;j<theHeight;j++){
+				var index = (i+j*theWidth)*4;
+				var r = img.data[index];
+				var g = img.data[index+1];
+				var b = img.data[index+2];
+				
+				r = 255 - r;
+				g = 255 - g;
+				b = 255 - b;
+
+				img.data[index] = r;
+				img.data[index+1] = g;
+				img.data[index+2] = b;
+			}
+		}
+		return img;		
+	}
+
+	
+	var redder = function(img){
+		var theWidth = $('#pictureImg').width();
+		var theHeight = $('#pictureImg').height();;
+		
+		for(var i=0;i<theWidth;i++){
+			for(var j=0;j<theHeight;j++){
+				var index = (i+j*theWidth)*4;
+				var r = img.data[index];
+				r += 20;
+				if(r<0){
+					r = 0
+				}else if(r >255){
+					r = 255;
+				}				
+				img.data[index] = r;
+			}
+		}
+		return img;		
+	}
+
+	var greener = function(img){
+		var theWidth = $('#pictureImg').width();
+		var theHeight = $('#pictureImg').height();;
+		
+		for(var i=0;i<theWidth;i++){
+			for(var j=0;j<theHeight;j++){
+				var index = (i+j*theWidth)*4;
+				var g = img.data[index+1];
+				g += 20;
+				if(g<0){
+					g = 0
+				}else if(g >255){
+					g = 255;
+				}				
+				img.data[index+1] = g;
+			}
+		}
+		return img;		
+	}
+	
+	var bluer = function(img){
+		var theWidth = $('#pictureImg').width();
+		var theHeight = $('#pictureImg').height();;
+		
+		for(var i=0;i<theWidth;i++){
+			for(var j=0;j<theHeight;j++){
+				var index = (i+j*theWidth)*4;
+				var b = img.data[index+2];
+				b += 20;
+				if(b<0){
+					b = 0
+				}else if(b >255){
+					b = 255;
+				}				
 				img.data[index+2] = b;
 			}
 		}
